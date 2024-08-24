@@ -44,7 +44,7 @@ class PedidoController extends Controller
     {
         try {
             $validatedData = $request->validate([
-                'ClienteId' => 'required|exists:tblclientes,ClienteId',
+                'ClienteId' => 'required|integer',
                 'fecha' => 'required|date',
             ]);
 
@@ -61,6 +61,7 @@ class PedidoController extends Controller
     {
         try {
             $pedido = tblpedido::findOrFail($id);
+            $pedido->fecha = $pedido->fecha instanceof \DateTime ? $pedido->fecha->format('Y-m-d') : $pedido->fecha;
             return response()->json($pedido, 200);
         } catch (\Exception $e) {
             Log::error('Error al mostrar pedido: ' . $e->getMessage());
@@ -75,8 +76,8 @@ class PedidoController extends Controller
             $pedido = tblpedido::findOrFail($id);
 
             $validatedData = $request->validate([
-                'ClienteId' => 'sometimes|required|exists:tblclientes,id',
-                'fecha' => 'sometimes|required|date',
+                'ClienteId' => 'required|integer',
+                'fecha' => 'required|date',
             ]);
 
             $pedido->update($validatedData);
@@ -95,7 +96,7 @@ class PedidoController extends Controller
             $pedido = tblpedido::findOrFail($id);
             $pedido->delete();
 
-            return response()->json(['message' => 'Pedido eliminado correctamente.'], 200);
+            return response()->json(null, 204);
         } catch (\Exception $e) {
             Log::error('Error al eliminar pedido: ' . $e->getMessage());
             return response()->json(['error' => 'Error interno del servidor'], 500);
