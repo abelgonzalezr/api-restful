@@ -6,6 +6,7 @@ use App\Models\tblfactura;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Traits\Paginates;
+use Illuminate\Support\Facades\Log;
 
 class FacturaController extends Controller
 {
@@ -14,73 +15,98 @@ class FacturaController extends Controller
     // Listar todas las facturas con filtros y paginación
     public function index(Request $request): JsonResponse
     {
-        $query = tblfactura::query();
+        try {
+            $query = tblfactura::query();
 
-        // Aplicar filtros
-        if ($request->has('PedidoId')) {
-            $query->where('PedidoId', $request->PedidoId);
-        }
-        if ($request->has('monto_min')) {
-            $query->where('monto_total', '>=', $request->monto_min);
-        }
-        if ($request->has('monto_max')) {
-            $query->where('monto_total', '<=', $request->monto_max);
-        }
-        if ($request->has('fecha_desde')) {
-            $query->where('fecha_emision', '>=', $request->fecha_desde);
-        }
-        if ($request->has('fecha_hasta')) {
-            $query->where('fecha_emision', '<=', $request->fecha_hasta);
-        }
+            // Aplicar filtros
+            if ($request->has('PedidoId')) {
+                $query->where('PedidoId', $request->PedidoId);
+            }
+            if ($request->has('monto_min')) {
+                $query->where('monto_total', '>=', $request->monto_min);
+            }
+            if ($request->has('monto_max')) {
+                $query->where('monto_total', '<=', $request->monto_max);
+            }
+            if ($request->has('fecha_desde')) {
+                $query->where('fecha_emision', '>=', $request->fecha_desde);
+            }
+            if ($request->has('fecha_hasta')) {
+                $query->where('fecha_emision', '<=', $request->fecha_hasta);
+            }
 
-        // Aplicar paginación
-        $facturas = $this->applyPagination($request, $query);
+            // Aplicar paginación
+            $facturas = $this->applyPagination($request, $query);
 
-        return response()->json($facturas, 200);
+            return response()->json($facturas, 200);
+        } catch (\Exception $e) {
+            Log::error('Error al listar facturas: ' . $e->getMessage());
+            return response()->json(['error' => 'Error interno del servidor'], 500);
+        }
     }
 
     // Crear una nueva factura
     public function store(Request $request): JsonResponse
     {
-        $validatedData = $request->validate([
-            'PedidoId' => 'required|exists:tblpedido,PedidoId',
-            'monto_total' => 'required|numeric',
-            'fecha_emision' => 'required|date',
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'PedidoId' => 'required|exists:tblpedido,PedidoId',
+                'monto_total' => 'required|numeric',
+                'fecha_emision' => 'required|date',
+            ]);
 
-        $factura = tblfactura::create($validatedData);
-        return response()->json($factura, 201);
+            $factura = tblfactura::create($validatedData);
+            return response()->json($factura, 201);
+        } catch (\Exception $e) {
+            Log::error('Error al crear factura: ' . $e->getMessage());
+            return response()->json(['error' => 'Error interno del servidor'], 500);
+        }
     }
 
     // Mostrar una factura específica
     public function show($id): JsonResponse
     {
-        $factura = tblfactura::findOrFail($id);
-        return response()->json($factura, 200);
+        try {
+            $factura = tblfactura::findOrFail($id);
+            return response()->json($factura, 200);
+        } catch (\Exception $e) {
+            Log::error('Error al mostrar factura: ' . $e->getMessage());
+            return response()->json(['error' => 'Error interno del servidor'], 500);
+        }
     }
 
     // Actualizar una factura existente
     public function update(Request $request, $id): JsonResponse
     {
-        $factura = tblfactura::findOrFail($id);
+        try {
+            $factura = tblfactura::findOrFail($id);
 
-        $validatedData = $request->validate([
-            'PedidoId' => 'sometimes|required|exists:tblpedido,PedidoId',
-            'monto_total' => 'sometimes|required|numeric',
-            'fecha_emision' => 'sometimes|required|date',
-        ]);
+            $validatedData = $request->validate([
+                'PedidoId' => 'sometimes|required|exists:tblpedido,PedidoId',
+                'monto_total' => 'sometimes|required|numeric',
+                'fecha_emision' => 'sometimes|required|date',
+            ]);
 
-        $factura->update($validatedData);
+            $factura->update($validatedData);
 
-        return response()->json($factura, 200);
+            return response()->json($factura, 200);
+        } catch (\Exception $e) {
+            Log::error('Error al actualizar factura: ' . $e->getMessage());
+            return response()->json(['error' => 'Error interno del servidor'], 500);
+        }
     }
 
     // Eliminar una factura
     public function destroy($id): JsonResponse
     {
-        $factura = tblfactura::findOrFail($id);
-        $factura->delete();
+        try {
+            $factura = tblfactura::findOrFail($id);
+            $factura->delete();
 
-        return response()->json(['message' => 'Factura eliminada correctamente.'], 200);
+            return response()->json(['message' => 'Factura eliminada correctamente.'], 200);
+        } catch (\Exception $e) {
+            Log::error('Error al eliminar factura: ' . $e->getMessage());
+            return response()->json(['error' => 'Error interno del servidor'], 500);
+        }
     }
 }

@@ -14,7 +14,7 @@ class TblclienteFactory extends Factory
         return [
             'nombre' => $this->faker->name,
             'telefono' => $this->faker->phoneNumber,
-            'tipo_cliente' => $this->faker->randomElement(['regular', 'premium']),
+            'tipo_cliente' => $this->faker->randomElement(['regular', 'vip', 'nuevo']),
         ];
     }
 }
