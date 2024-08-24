@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class tblfactura extends Model
 {
+    use HasFactory;
+
     protected $table = 'tblfactura';
     protected $primaryKey = 'FacturaId';
 
@@ -18,4 +21,3 @@ class tblfactura extends Model
         return $this->belongsTo(tblpedido::class, 'PedidoId');
     }
 }
-

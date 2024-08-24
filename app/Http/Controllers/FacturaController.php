@@ -103,7 +103,7 @@ class FacturaController extends Controller
             $factura = tblfactura::findOrFail($id);
             $factura->delete();
 
-            return response()->json(['message' => 'Factura eliminada correctamente.'], 200);
+            return response()->json(['message' => 'Factura eliminada correctamente.'], 204);
         } catch (\Exception $e) {
             Log::error('Error al eliminar factura: ' . $e->getMessage());
             return response()->json(['error' => 'Error interno del servidor'], 500);

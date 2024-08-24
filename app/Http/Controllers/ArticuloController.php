@@ -97,7 +97,7 @@ class ArticuloController extends Controller
             $articulo = tblarticulo::findOrFail($id);
             $articulo->delete();
 
-            return response()->json(['message' => 'Artículo eliminado correctamente.'], 200);
+            return response()->json(['message' => 'Artículo eliminado correctamente.'], 204);
         } catch (\Exception $e) {
             Log::error('Error al eliminar artículo: ' . $e->getMessage());
             return response()->json(['error' => 'Error interno del servidor'], 500);

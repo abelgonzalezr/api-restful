@@ -111,7 +111,7 @@ class UsuarioController extends Controller
             $user = tblPY1::findOrFail($id);
             $user->delete();
 
-            return response()->json(['message' => 'Usuario eliminado correctamente.'], 200);
+            return response()->json(['message' => 'Usuario eliminado correctamente.'], 204);
         } catch (\Exception $e) {
             Log::error('Error al eliminar usuario: ' . $e->getMessage());
             return response()->json(['error' => 'Error interno del servidor'], 500);

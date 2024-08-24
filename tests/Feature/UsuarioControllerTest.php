@@ -70,7 +70,7 @@ class UsuarioControllerTest extends TestCase
 
         $response = $this->delete("/api/usuarios/{$usuario->UserId}");
 
-        $response->assertStatus(200);
+        $response->assertStatus(204);
         $this->assertDatabaseMissing('tblPY1', ['UserId' => $usuario->UserId]);
     }
 }

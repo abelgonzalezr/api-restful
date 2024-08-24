@@ -63,7 +63,7 @@ class ArticuloControllerTest extends TestCase
 
         $response = $this->delete("/api/articulos/{$articulo->ArticuloId}");
 
-        $response->assertStatus(200);
+        $response->assertStatus(204);
         $this->assertDatabaseMissing('tblarticulos', ['ArticuloId' => $articulo->ArticuloId]);
     }
 }
