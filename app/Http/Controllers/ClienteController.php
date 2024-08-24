@@ -5,13 +5,31 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\tblcliente;
 use Illuminate\Http\JsonResponse;
+use App\Traits\Paginates;
 
 class ClienteController extends Controller
 {
-    // Listar todos los clientes
-    public function index(): JsonResponse
+    use Paginates;
+
+    // Listar todos los clientes con filtros y paginación
+    public function index(Request $request): JsonResponse
     {
-        $clientes = tblcliente::all();
+        $query = tblcliente::query();
+
+        // Aplicar filtros
+        if ($request->has('nombre')) {
+            $query->where('nombre', 'like', '%' . $request->nombre . '%');
+        }
+        if ($request->has('telefono')) {
+            $query->where('telefono', 'like', '%' . $request->telefono . '%');
+        }
+        if ($request->has('tipo_cliente')) {
+            $query->where('tipo_cliente', $request->tipo_cliente);
+        }
+
+        // Aplicar paginación
+        $clientes = $this->applyPagination($request, $query);
+
         return response()->json($clientes, 200);
     }
 

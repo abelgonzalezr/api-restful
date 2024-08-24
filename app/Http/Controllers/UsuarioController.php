@@ -5,13 +5,34 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\tblPY1;
 use Illuminate\Http\JsonResponse;
+use App\Traits\Paginates;
 
 class UsuarioController extends Controller
 {
-    // Listar todos los usuarios
-    public function index(): JsonResponse
+    use Paginates;
+
+    // Listar todos los usuarios con filtros y paginación
+    public function index(Request $request): JsonResponse
     {
-        $usuarios = TblPY1::all();
+        $query = tblPY1::query();
+
+        // Aplicar filtros
+        if ($request->has('username')) {
+            $query->where('username', 'like', '%' . $request->username . '%');
+        }
+        if ($request->has('cedula')) {
+            $query->where('cedula', 'like', '%' . $request->cedula . '%');
+        }
+        if ($request->has('telefono')) {
+            $query->where('telefono', 'like', '%' . $request->telefono . '%');
+        }
+        if ($request->has('tipo_sangre')) {
+            $query->where('tipo_sangre', $request->tipo_sangre);
+        }
+
+        // Aplicar paginación
+        $usuarios = $this->applyPagination($request, $query);
+
         return response()->json($usuarios, 200);
     }
 
@@ -29,21 +50,21 @@ class UsuarioController extends Controller
         // Encriptar la contraseña
         $validatedData['password'] = bcrypt($validatedData['password']);
 
-        $usuario = TblPY1::create($validatedData);
+        $usuario = tblPY1::create($validatedData);
         return response()->json($usuario, 201);
     }
 
     // Mostrar un usuario específico
     public function show($id): JsonResponse
     {
-        $usuario = TblPY1::findOrFail($id);
+        $usuario = tblPY1::findOrFail($id);
         return response()->json($usuario, 200);
     }
 
     // Actualizar un usuario existente
     public function update(Request $request, $id): JsonResponse
     {
-        $user = TblPY1::findOrFail($id);
+        $user = tblPY1::findOrFail($id);
 
         $validatedData = $request->validate([
             'username' => 'sometimes|required|string|unique:tblPY1,username,' . $id . ',UserId',
@@ -65,7 +86,7 @@ class UsuarioController extends Controller
     // Eliminar un usuario
     public function destroy($id): JsonResponse
     {
-        $user = TblPY1::findOrFail($id);
+        $user = tblPY1::findOrFail($id);
         $user->delete();
 
         return response()->json(['message' => 'Usuario eliminado correctamente.'], 200);

@@ -5,13 +5,31 @@ namespace App\Http\Controllers;
 use App\Models\tblpedido;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Traits\Paginates;
 
 class PedidoController extends Controller
 {
-    // Listar todos los pedidos
-    public function index(): JsonResponse
+    use Paginates;
+
+    // Listar todos los pedidos con filtros y paginación
+    public function index(Request $request): JsonResponse
     {
-        $pedidos = tblpedido::all();
+        $query = tblpedido::query();
+
+        // Aplicar filtros
+        if ($request->has('ClienteId')) {
+            $query->where('ClienteId', $request->ClienteId);
+        }
+        if ($request->has('fecha_desde')) {
+            $query->where('fecha', '>=', $request->fecha_desde);
+        }
+        if ($request->has('fecha_hasta')) {
+            $query->where('fecha', '<=', $request->fecha_hasta);
+        }
+
+        // Aplicar paginación
+        $pedidos = $this->applyPagination($request, $query);
+
         return response()->json($pedidos, 200);
     }
 

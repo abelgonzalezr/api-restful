@@ -5,13 +5,37 @@ namespace App\Http\Controllers;
 use App\Models\tblfactura;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Traits\Paginates;
 
 class FacturaController extends Controller
 {
-    // Listar todas las facturas
-    public function index(): JsonResponse
+    use Paginates;
+
+    // Listar todas las facturas con filtros y paginación
+    public function index(Request $request): JsonResponse
     {
-        $facturas = tblfactura::all();
+        $query = tblfactura::query();
+
+        // Aplicar filtros
+        if ($request->has('PedidoId')) {
+            $query->where('PedidoId', $request->PedidoId);
+        }
+        if ($request->has('monto_min')) {
+            $query->where('monto_total', '>=', $request->monto_min);
+        }
+        if ($request->has('monto_max')) {
+            $query->where('monto_total', '<=', $request->monto_max);
+        }
+        if ($request->has('fecha_desde')) {
+            $query->where('fecha_emision', '>=', $request->fecha_desde);
+        }
+        if ($request->has('fecha_hasta')) {
+            $query->where('fecha_emision', '<=', $request->fecha_hasta);
+        }
+
+        // Aplicar paginación
+        $facturas = $this->applyPagination($request, $query);
+
         return response()->json($facturas, 200);
     }
 

@@ -5,13 +5,31 @@ namespace App\Http\Controllers;
 use App\Models\tblarticulo;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Traits\Paginates;
 
 class ArticuloController extends Controller
 {
-    // Listar todos los artículos
-    public function index(): JsonResponse
+    use Paginates;
+
+    // Listar todos los artículos con filtros y paginación
+    public function index(Request $request): JsonResponse
     {
-        $articulos = tblarticulo::all();
+        $query = tblarticulo::query();
+
+        // Aplicar filtros
+        if ($request->has('codigo_barras')) {
+            $query->where('codigo_barras', 'like', '%' . $request->codigo_barras . '%');
+        }
+        if ($request->has('descripcion')) {
+            $query->where('descripcion', 'like', '%' . $request->descripcion . '%');
+        }
+        if ($request->has('fabricante')) {
+            $query->where('fabricante', 'like', '%' . $request->fabricante . '%');
+        }
+
+        // Aplicar paginación
+        $articulos = $this->applyPagination($request, $query);
+
         return response()->json($articulos, 200);
     }
 
