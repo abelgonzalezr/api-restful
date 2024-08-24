@@ -37,7 +37,7 @@ class ArticuloController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
-            'codigo_barras' => 'required|string|unique:tblArticulo,codigo_barras',
+            'codigo_barras' => 'required|string|unique:tblarticulos,codigo_barras',
             'descripcion' => 'required|string',
             'fabricante' => 'required|string',
         ]);
@@ -59,7 +59,7 @@ class ArticuloController extends Controller
         $articulo = tblarticulo::findOrFail($id);
 
         $validatedData = $request->validate([
-            'codigo_barras' => 'sometimes|required|string|unique:tblArticulo,codigo_barras,' . $id . ',ArticuloId',
+            'codigo_barras' => 'sometimes|required|string|unique:tblarticulos,codigo_barras,' . $id . ',ArticuloId',
             'descripcion' => 'sometimes|required|string',
             'fabricante' => 'sometimes|required|string',
         ]);
