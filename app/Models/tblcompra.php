@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class tblcompra extends Model
 {
-    protected $table = 'tblCompra';
+    protected $table = 'tblcompras';
 
     protected $primaryKey = 'CompraId';
 
