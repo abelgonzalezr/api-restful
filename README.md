@@ -201,3 +201,9 @@ Puedes probar los endpoints usando herramientas como Postman o cURL. A continuac
     curl -X DELETE http://localhost:8000/api/usuarios/{id}
     ```
 
+### Corriendo las Pruebas
+
+Para correr las pruebas, utiliza el siguiente comando:
+```sh
+ php artisan test
+```
