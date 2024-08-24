@@ -13,8 +13,4 @@ class tblcliente extends Model
 
     protected $fillable = ['nombre', 'telefono', 'tipo_cliente'];
 
-    public function compras()
-    {
-        return $this->hasMany(TblCompra::class, 'ClienteId', 'ClienteId');
-    }
 }
