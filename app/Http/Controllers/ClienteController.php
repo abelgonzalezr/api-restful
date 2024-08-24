@@ -60,7 +60,7 @@ class ClienteController extends Controller
 
         $validatedData = $request->validate([
             'nombre' => 'sometimes|required|string|max:255',
-            'telefono' => 'sometimes|required|string|unique:tblcliente,telefono,' . $id . ',ClienteId|max:20',
+            'telefono' => 'sometimes|required|string|unique:tblclientes,telefono,' . $id . ',ClienteId|max:20',
             'tipo_cliente' => 'sometimes|required|string|in:regular,vip,nuevo',
         ]);
 
@@ -75,6 +75,6 @@ class ClienteController extends Controller
         $cliente = tblcliente::findOrFail($id);
         $cliente->delete();
 
-        return response()->json(['message' => 'Cliente eliminado correctamente.'], 200);
+        return response()->json(['message' => 'Cliente eliminado correctamente.'], 204);
     }
 }
