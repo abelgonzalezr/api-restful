@@ -4,56 +4,59 @@ namespace App\Http\Controllers;
 
 use App\Models\tblcolocacion;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
 class ColocacionController extends Controller
 {
     // Listar todas las colocaciones
-    public function index()
+    public function index(): JsonResponse
     {
-        return tblcolocacion::with('articulo')->get();
+        $colocaciones = tblcolocacion::with('articulo')->get();
+        return response()->json($colocaciones, 200);
     }
 
     // Crear una nueva colocación
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $validatedData = $request->validate([
-            'nombre' => 'required|string',
-            'precio' => 'required|numeric',
+            'nombre' => 'required|string|max:255',
+            'precio' => 'required|numeric|min:0',
             'ArticuloId' => 'required|exists:tblArticulo,ArticuloId',
         ]);
 
-        return tblcolocacion::create($validatedData);
+        $colocacion = tblcolocacion::create($validatedData);
+        return response()->json($colocacion, 201);
     }
 
     // Mostrar una colocación específica
-    public function show($id)
+    public function show($id): JsonResponse
     {
-        return tblcolocacion::with('articulo')->findOrFail($id);
+        $colocacion = tblcolocacion::with('articulo')->findOrFail($id);
+        return response()->json($colocacion, 200);
     }
 
     // Actualizar una colocación existente
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): JsonResponse
     {
         $colocacion = tblcolocacion::findOrFail($id);
 
         $validatedData = $request->validate([
-            'nombre' => 'sometimes|required|string',
-            'precio' => 'sometimes|required|numeric',
+            'nombre' => 'sometimes|required|string|max:255',
+            'precio' => 'sometimes|required|numeric|min:0',
             'ArticuloId' => 'sometimes|required|exists:tblArticulo,ArticuloId',
         ]);
 
         $colocacion->update($validatedData);
 
-        return $colocacion;
+        return response()->json($colocacion, 200);
     }
 
     // Eliminar una colocación
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
         $colocacion = tblcolocacion::findOrFail($id);
         $colocacion->delete();
 
-        return response()->json(['message' => 'Colocación eliminada correctamente.']);
+        return response()->json(['message' => 'Colocación eliminada correctamente.'], 200);
     }
 }
-
