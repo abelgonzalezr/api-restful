@@ -38,7 +38,7 @@ class ClienteController extends Controller
     {
         $validatedData = $request->validate([
             'nombre' => 'required|string|max:255',
-            'telefono' => 'required|string|unique:tblcliente,telefono|max:20',
+            'telefono' => 'required|string|unique:tblclientes,telefono|max:20',
             'tipo_cliente' => 'required|string|in:regular,vip,nuevo',
         ]);
 
